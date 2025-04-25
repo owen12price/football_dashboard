@@ -4,7 +4,6 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from datetime import datetime
-from itertools import combinations
 from prediction import predict_outcome
 
 st.set_page_config(
@@ -23,18 +22,14 @@ def calculate_form(team, date, form_history):
 @st.cache_data
 
 def load_data(uploaded_file):
-    from prediction import load_data as raw_loader, build_training_data, train_model
+    from prediction import load_data as raw_loader, build_training_data
 
     if uploaded_file is None:
         st.warning("📂 Please upload a match dataset (.xlsx) using the sidebar.")
         st.stop()
 
-    # Correctly load uploaded file using prediction.py's loader
     df = raw_loader(uploaded_file)
-
     matches, teams, avg_xga, form_history, elo = build_training_data(df)
-    features = ['elo_diff', 'form_diff', 'status_diff', 'xGA_diff']
-    model, scaler = train_model(matches, features)
 
     # Calculate current standings
     standings = pd.DataFrame(0, index=list(teams), columns=['Pts', 'W', 'D', 'L', 'GF', 'GA'])
